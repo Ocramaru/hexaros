@@ -1,0 +1,17 @@
+services:
+  hexapod:
+    build: .
+    image: hexapod-ros
+    init: true                 # forwards Ctrl-C / docker stop so the node relaxes the servos
+    network_mode: host         # ROS discovery between the container, the Pi and sparky
+    devices:
+      - /dev/i2c-1             # PCA9685 boards
+      - /dev/gpiochip0         # GPIO 4, servo power
+    volumes:
+      - .:/ws                  # the workspace, live (not a copy)
+    working_dir: /ws
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    stdin_open: true
+    tty: true
+

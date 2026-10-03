@@ -1,6 +1,6 @@
 ---
 name: todo
-description: Open features for the hexapod ROS package — all 18 servos, calibration and standing, and ROS pipelines for the kit's sensors
+description: Open features for the hexapod ROS package — calibration, body poses, URDF and TF, and ROS pipelines for the kit's sensors
 kind: todo
 ---
 
@@ -11,18 +11,17 @@ kind: todo
 | section | line |
 |---|---|
 | Motion | 20 |
-| Sensors | 27 |
-| Outputs | 34 |
+| Sensors | 26 |
+| Outputs | 33 |
 
 <!-- /map -->
 
 
 ## Motion
 
-- Extend `servo_controller` to drive all 18 servos across both boards.
-- Per-joint calibration from the kit's `point.txt`, in a layer above the driver.
-- Neutral and standing poses from leg kinematics.
-- URDF and `robot_state_publisher`.
+- Per-joint calibration procedure, writing `calibration` in `config/hexapod.yaml`.
+- Body poses (height, tilt, offset) from closed-form leg IK.
+- URDF, `joint_states` from the controller, and `robot_state_publisher`.
 
 ## Sensors
 

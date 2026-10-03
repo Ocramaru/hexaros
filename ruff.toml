@@ -1,0 +1,12 @@
+line-length = 120
+indent-width = 2
+
+[lint]
+ignore = ["E701"]
+
+[lint.isort]
+# sort the way ament_flake8's google import order does, so the editor and colcon test agree
+known-first-party = ["hexapod"]
+known-third-party = ["launch"]  # the package's launch/ folder otherwise reads as first-party
+force-sort-within-sections = true
+order-by-type = false

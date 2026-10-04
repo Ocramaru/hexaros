@@ -75,7 +75,7 @@ class ServoController(Node):
     for name, position in zip(msg.name, msg.position):
       index = JOINT_INDEX.get(name)
       if index is None:
-        self.get_logger().warn(f'Unknown joint {name!r} ignored')
+        self.get_logger().warning(f'Unknown joint {name!r} ignored')
         continue
       if np.isnan(position) or self.joint_radians[index] == position: continue  # no command, or already there
       commands[index] = position

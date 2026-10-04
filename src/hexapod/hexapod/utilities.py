@@ -22,8 +22,16 @@ def run_node(node_class: type[Node]):
 
 
 class FakeBus:
-  def __init__(self):
+  def __init__(self, read_byte_value=0):
     self.registers = {}
+    self.read_byte_value = read_byte_value  # what a bare read_byte returns, e.g. an ADC reading
+
+  def write_byte(self, address, value):
+    if not 0 <= value <= 255: raise ValueError('Value must be between 0 and 255')
+    print(f'write addr:0x{address:02x}, command: 0x{value:02x}', flush=True)
+
+  def read_byte(self, address):
+    return self.read_byte_value
 
   def write_byte_data(self, address, register, value):
     if not 0 <= value <= 255: raise ValueError('Value must be between 0 and 255')

@@ -14,9 +14,15 @@ def generate_launch_description():
   # robot_desc = FileContent(urdf_file)
   # rsp_params = {'robot_description': robot_desc}
 
-  config = os.path.join(get_package_share_directory('hexapod'), 'config', 'hexapod.yaml')
+  config_dir = os.path.join(get_package_share_directory('hexapod'), 'config')
+  parameters = [  # later entries override earlier ones
+    os.path.join(config_dir, 'hexapod.yaml'),
+    os.path.join(config_dir, 'calibration.yaml'),
+    {'dry_run': LaunchConfiguration('dry_run')},
+  ]
   return LaunchDescription([
     DeclareLaunchArgument('dry_run', default_value='false'),
-    Node(package='hexapod', executable='servo_controller', output='screen', parameters=[config, {'dry_run': LaunchConfiguration('dry_run')}]),
+    Node(package='hexapod', executable='servo_controller', output='screen', parameters=parameters),
     Node(package='hexapod', executable='servo_publisher', output='screen'),
+    Node(package='hexapod', executable='battery_monitor', output='screen', parameters=parameters),
   ])

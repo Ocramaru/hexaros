@@ -28,8 +28,7 @@ SIGNS = np.array([1, -1, 1] * 3 + [1, 1, -1] * 3 + [1, 1])
 # servo angles at rest (joint angle 0) | (90, 90, 10) legs 0-2, (90, 90, 170) legs 3-5, (90, 90) head
 SERVO_AT_REST = np.array([np.pi / 2, np.pi / 2, np.pi / 18] * 3 + [np.pi / 2, np.pi / 2, 17 * np.pi / 18] * 3 + [np.pi / 2, np.pi / 2])
 
-# standing pose: the kit's move_position(0, 0, 0), feet at [140, 0, -44] mm in each leg frame; head at rest
-STAND_POSE = np.array([0.0, -0.716, 1.745] * 6 + [0.0, 0.0])
+STAND_POSE = np.array([0.0, -0.492, 1.634] * 6 + [0.0, 0.0])  # the kit's highest stance, feet 64 mm below the hip
 
 
 def servo_address_channel(servo: int, board_addresses=BOARD_ADDRESSES) -> tuple[int, int]:

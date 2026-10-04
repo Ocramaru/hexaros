@@ -1,4 +1,4 @@
-"""Test publisher: walks all 18 joints from the assembly pose to the standing pose, then bounces joint 1.
+"""Test publisher: walks all joints from the assembly pose to the standing pose, then bounces joint 1 and sweeps the head.
 
 Sends full JointState commands on `joint_commands` at 20 Hz; the controller skips joints that did not change.
 
@@ -9,7 +9,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
-from hexapod.joints import JOINT_NAMES, LEGS, STAND_POSE
+from hexapod.joints import HEAD, JOINT_NAMES, LEGS, STAND_POSE
 from hexapod.utilities import run_node
 
 
@@ -17,10 +17,11 @@ class ServoPublisher(Node):
   def __init__(self):
     super().__init__('servo_publisher')
 
-    # all 18 joints in radians, stepping from the assembly pose (0) to the standing pose, then bouncing joint 1 on every leg
+    # all joints in radians, stepping from the assembly pose (0) to the standing pose, then bouncing and sweeping
     self.joint_angles = np.zeros(len(JOINT_NAMES))
     bounce = np.zeros(len(JOINT_NAMES))
     bounce[LEGS][1::3] = np.radians(5)  # joint 1 of every leg
+    bounce[HEAD] = np.radians([20, 10])  # pan, tilt
     self.targets = [STAND_POSE, STAND_POSE + bounce, STAND_POSE - bounce]
     self.target_index = 0
     self.step_size = np.radians(2)

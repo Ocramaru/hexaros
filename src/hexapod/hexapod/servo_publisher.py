@@ -9,7 +9,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
-from hexapod.joints import JOINT_NAMES, STAND_POSE
+from hexapod.joints import JOINT_NAMES, LEGS, STAND_POSE
 from hexapod.utilities import run_node
 
 
@@ -18,9 +18,9 @@ class ServoPublisher(Node):
     super().__init__('servo_publisher')
 
     # all 18 joints in radians, stepping from the assembly pose (0) to the standing pose, then bouncing joint 1 on every leg
-    self.joint_angles = np.zeros((6, 3))
-    bounce = np.zeros((6, 3))
-    bounce[:, 1] = np.radians(5)
+    self.joint_angles = np.zeros(len(JOINT_NAMES))
+    bounce = np.zeros(len(JOINT_NAMES))
+    bounce[LEGS][1::3] = np.radians(5)  # joint 1 of every leg
     self.targets = [STAND_POSE, STAND_POSE + bounce, STAND_POSE - bounce]
     self.target_index = 0
     self.step_size = np.radians(2)
@@ -43,8 +43,8 @@ class ServoPublisher(Node):
     self.step_joints()
     msg = JointState()
     msg.header.stamp = self.get_clock().now().to_msg()
-    msg.name = JOINT_NAMES.flatten().tolist()
-    msg.position = self.joint_angles.flatten().tolist()
+    msg.name = JOINT_NAMES
+    msg.position = self.joint_angles.tolist()
     self.publisher.publish(msg)
 
 

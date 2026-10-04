@@ -1,9 +1,13 @@
 # Gerry's hardware configuration, loaded as node parameters by the launch file; measured values live in calibration.yaml.
-# Lists are leg-major in joints 0-2 order: leg0_joint0, leg0_joint1, leg0_joint2, leg1_joint0, ...
+# Per-joint maps are in joint order: legs leg-major (leg0_joint0, leg0_joint1, leg0_joint2, leg1_joint0, ...), then head pan and tilt.
 servo_controller:
   ros__parameters:
     board_addresses: [65, 64]  # 0x41 holds kit servos 0-15, 0x40 holds 16-31
-    servo_map: [15, 14, 13, 12, 11, 10, 9, 8, 31, 22, 23, 27, 19, 20, 21, 16, 17, 18]
+    servo_map: [15, 14, 13, 12, 11, 10, 9, 8, 31,  # legs 0-2
+                22, 23, 27, 19, 20, 21, 16, 17, 18,  # legs 3-5
+                0, 1]  # head
+    servo_limits:  # [min, max] servo radians overrides for joints that dont default [0,pi]
+      head_joint0: [0.873, 3.142]  # pan (50, 180) degrees
 
 battery_monitor:
   ros__parameters:

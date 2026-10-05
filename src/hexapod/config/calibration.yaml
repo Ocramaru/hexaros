@@ -5,3 +5,6 @@ battery_monitor:
 servo_controller:
   ros__parameters:
     calibration: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+imu_sensor:
+  ros__parameters:
+    gyro_bias: [0.02259, 0.02343, 0.00233]

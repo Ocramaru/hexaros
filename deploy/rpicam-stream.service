@@ -1,0 +1,17 @@
+# Streams the Pi camera as MJPEG on 127.0.0.1:8554 for gscam in the hexapod container.
+# The ROS-packaged libcamera cannot drive the Pi camera, so the host's own rpicam-vid does the capture.
+# Install on the Pi: sudo cp deploy/rpicam-stream.service /etc/systemd/system/ && sudo systemctl daemon-reload && sudo systemctl enable --now rpicam-stream
+[Unit]
+Description=Pi camera MJPEG stream for the hexapod container
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/rpicam-vid --nopreview --timeout 0 --codec mjpeg --width 640 --height 480 --framerate 15 --listen --output tcp://127.0.0.1:8554
+# --listen serves one client and exits when it disconnects, so systemd restarts it for the next
+Restart=always
+RestartSec=1
+DynamicUser=yes
+SupplementaryGroups=video
+
+[Install]
+WantedBy=multi-user.target

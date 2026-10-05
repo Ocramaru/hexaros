@@ -15,8 +15,8 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
 from hexapod.drivers.servo import ServoDriver
-from hexapod.joints import (BOARD_ADDRESSES, JOINT_INDEX, JOINT_NAMES, joint_to_servo, servo_address_channel,
-                            SERVO_LIMITS, SERVO_MAP, SIT_POSE)
+from hexapod.joints import (BOARD_ADDRESSES, JOINT_INDEX, JOINT_NAMES, joint_to_servo, REST_POSE, servo_address_channel,
+                            SERVO_LIMITS, SERVO_MAP)
 from hexapod.tests.fake_bus import FakeBus
 from hexapod.utilities import run_node
 
@@ -92,16 +92,16 @@ class ServoController(Node):
       commands[index] = position
     self.write_joints(commands)
 
-  def sit_down(self, duration=1.0, steps=20):
-    """Ramp every commanded joint to SIT_POSE, so a standing robot lowers itself before power is cut."""
+  def lie_down(self, duration=1.0, steps=20):
+    """Ramp every commanded joint to REST_POSE, so a standing robot lowers itself before power is cut."""
     commanded = np.flatnonzero(~np.isnan(self.joint_radians))
     start = self.joint_radians[commanded]
     for fraction in np.linspace(0, 1, steps + 1)[1:]:
-      self.write_joints(dict(zip(commanded, start + fraction * (SIT_POSE[commanded] - start))))
+      self.write_joints(dict(zip(commanded, start + fraction * (REST_POSE[commanded] - start))))
       time.sleep(duration / steps)
 
   def destroy_node(self):
-    with contextlib.ExitStack() as cleanup:  # runs last-registered first: sit, power off, relax, close
+    with contextlib.ExitStack() as cleanup:  # runs last-registered first: lie down, power off, relax, close
       cleanup.callback(super().destroy_node)
       cleanup.callback(self.bus.close)
       for driver in self.drivers.values():
@@ -109,7 +109,7 @@ class ServoController(Node):
       if self.power_pin is not None:
         cleanup.callback(self.power_pin.close)
         cleanup.callback(self.power_pin.off)
-      cleanup.callback(self.sit_down)
+      cleanup.callback(self.lie_down)
 
 
 def main():

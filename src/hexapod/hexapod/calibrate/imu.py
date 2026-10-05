@@ -1,6 +1,6 @@
 """Measure the gyro bias with the robot still and offer to save it to config/calibration.yaml.
 
-Set the robot on a still surface, then run on the Pi:
+Keep the robot still, then run on the Pi from the workspace root:
   python3 -m hexapod.calibrate.imu
 
 Author: Marco Cassar (@Ocramaru)
@@ -14,7 +14,7 @@ import yaml
 
 from hexapod.drivers.imu import ImuDriver
 
-CONFIG_DIR = Path(__file__).resolve().parents[2] / 'config'
+CONFIG_DIR = Path('src/hexapod/config')  # the source config from the workspace root, not the installed copy colcon rebuilds over
 PERIOD = 0.01
 MAX_GYRO_SPREAD = np.radians(0.5)  # a standard deviation above this rad/s means the robot moved
 HEADER = '# Written by the hexapod.calibrate scripts; loaded after hexapod.yaml, so these values win.\n'

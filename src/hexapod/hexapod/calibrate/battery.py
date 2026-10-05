@@ -1,6 +1,6 @@
 """Calibrate the battery voltage dividers from multimeter readings and offer to save them to config/calibration.yaml.
 
-Measure each pack at rest, then run on the Pi with one reading per pack, in `channels` order:
+Measure each pack at rest, then run on the Pi from the workspace root with one reading per pack, in `channels` order:
   python3 -m hexapod.calibrate.battery 8.14 8.10
 
 Author: Marco Cassar (@Ocramaru)
@@ -13,7 +13,7 @@ import yaml
 
 from hexapod.drivers.adc import AdcDriver
 
-CONFIG_DIR = Path(__file__).resolve().parents[2] / 'config'
+CONFIG_DIR = Path('src/hexapod/config')  # the source config from the workspace root, not the installed copy colcon rebuilds over
 SAMPLES = 20
 MIN_PIN_VOLTS = 0.1  # below this the pack is switched off or disconnected
 HEADER = '# Written by the hexapod.calibrate scripts; loaded after hexapod.yaml, so these values win.\n'

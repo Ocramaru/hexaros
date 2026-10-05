@@ -18,7 +18,7 @@ kind: context
 <!-- /map -->
 
 
-The package drives Gerry's 18 leg servos and 2 head servos, and reads its batteries. `sensor_msgs/JointState` commands on `joint_commands` go to `servo_controller`, which converts joint angles to servo angles and writes them to two PCA9685 boards over I²C; `battery_monitor` publishes `BatteryState` on `battery/<name>` from the ADS7830 ADC; `imu_sensor` publishes raw `Imu` on `imu/data_raw` from the MPU6050, and `imu_filter_madgwick` adds orientation on `imu/data`.
+The package drives Gerry's 18 leg servos and 2 head servos, and reads its batteries. `sensor_msgs/JointState` commands on `joint_commands` go to `servo_controller`, which converts joint angles to servo angles and writes them to two PCA9685 boards over I²C; `battery_monitor` publishes `BatteryState` on `battery/<name>` from the ADS7830 ADC; `imu_sensor` publishes raw `Imu` on `imu/data_raw` from the MPU6050, and `imu_filter_madgwick` adds orientation on `imu/data`; `camera_ros` publishes `camera/image_raw`, with `fake_camera` standing in on dry runs.
 
 ## Layout
 
@@ -28,7 +28,7 @@ The package drives Gerry's 18 leg servos and 2 head servos, and reads its batter
 | `hexapod/motion/` | nodes that move the robot |
 | `hexapod/sensors/` | nodes that publish sensor readings |
 | `hexapod/calibrate/` | `python3 -m` scripts that write `config/calibration.yaml` |
-| `hexapod/tests/` | dry-run stand-ins (`FakeBus`) and hardware smoke tests |
+| `hexapod/tests/` | dry-run stand-ins (`FakeBus`, `fake_camera`) and hardware smoke tests |
 | `hexapod/` | `joints.py` (joint layout, shared by motion and the URDF) and `utilities.py` (`run_node`) |
 | `test/` | ament lint tests run by `colcon test` |
 
@@ -46,6 +46,7 @@ The package drives Gerry's 18 leg servos and 2 head servos, and reads its batter
 
 ## Rules
 
+- Use an existing package (`imu_filter_madgwick`, `camera_ros`) over writing our own; write one only for hardware no package covers.
 - Drivers stay free of ROS, so they test against `FakeBus`.
 - Every exit path relaxes the servos.
 - Stop the Freenove server before running anything; it drives the same boards and pin.

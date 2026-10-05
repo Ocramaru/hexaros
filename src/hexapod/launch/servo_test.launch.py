@@ -32,4 +32,5 @@ def generate_launch_description():
          condition=UnlessCondition(LaunchConfiguration('dry_run'))),
     Node(package='hexapod', executable='fake_camera', name='camera', output='screen', parameters=parameters[:1],
          condition=IfCondition(LaunchConfiguration('dry_run'))),  # noise on camera_ros's topics, since sparky has no camera
+    Node(package='hexapod', executable='ultrasonic_sensor', output='screen', parameters=parameters),
   ])

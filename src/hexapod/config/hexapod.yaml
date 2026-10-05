@@ -38,3 +38,13 @@ camera:  # camera_ros, or fake_camera in dry runs: camera/image_raw, camera/imag
     width: 640
     height: 480
     frame_id: camera_link
+
+ultrasonic_sensor:
+  ros__parameters:
+    trigger_pin: 27
+    echo_pin: 22
+    min_range: 0.02  # HC-SR04 datasheet
+    max_range: 3.0  # the kit's limit
+    field_of_view: 0.26  # 15 degrees, HC-SR04 datasheet
+    frame_id: ultrasonic_link
+    period: 0.1

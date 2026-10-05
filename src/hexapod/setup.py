@@ -32,6 +32,7 @@ setup(
       'servo_publisher = hexapod.motion.servo_publisher:main',
       'battery_monitor = hexapod.sensors.battery_monitor:main',
       'imu_sensor = hexapod.sensors.imu_sensor:main',
+      'ultrasonic_sensor = hexapod.sensors.ultrasonic_sensor:main',
       'fake_camera = hexapod.tests.fake_camera:main',
     ],
   },

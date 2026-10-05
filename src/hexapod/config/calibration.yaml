@@ -1,7 +1,7 @@
 # Written by the hexapod.calibrate scripts; loaded after hexapod.yaml, so these values win.
 battery_monitor:
   ros__parameters:
-    dividers: [3.0, 3.0]
+    dividers: [2.972, 2.559]
 servo_controller:
   ros__parameters:
     calibration: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]

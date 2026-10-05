@@ -20,3 +20,15 @@ battery_monitor:
     design_capacity: 3.5  # Ah, IMREN 3500 mAh cells
     smoothing: 0.2
     period: 1.0
+
+imu_sensor:
+  ros__parameters:
+    address: 104  # 0x68, the MPU6050
+    frame_id: imu_link
+    period: 0.01  # 100 Hz
+
+imu_filter:  # imu_filter_madgwick: imu/data_raw in, imu/data with orientation out
+  ros__parameters:
+    use_mag: false
+    publish_tf: false
+    world_frame: enu

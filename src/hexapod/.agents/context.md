@@ -1,6 +1,6 @@
 ---
 name: context
-description: How the hexapod package's servo and battery nodes fit together, its two config files, hardware facts, and the rules changes must respect
+description: How the hexapod package's servo, battery and IMU nodes fit together, its two config files, hardware facts, and the rules changes must respect
 kind: context
 ---
 
@@ -13,12 +13,12 @@ kind: context
 | Layout | 23 |
 | Config | 35 |
 | Hardware | 40 |
-| Rules | 46 |
+| Rules | 47 |
 
 <!-- /map -->
 
 
-The package drives Gerry's 18 leg servos and 2 head servos, and reads its batteries. `sensor_msgs/JointState` commands on `joint_commands` go to `servo_controller`, which converts joint angles to servo angles and writes them to two PCA9685 boards over I²C; `battery_monitor` publishes `BatteryState` on `battery/<name>` from the ADS7830 ADC.
+The package drives Gerry's 18 leg servos and 2 head servos, and reads its batteries. `sensor_msgs/JointState` commands on `joint_commands` go to `servo_controller`, which converts joint angles to servo angles and writes them to two PCA9685 boards over I²C; `battery_monitor` publishes `BatteryState` on `battery/<name>` from the ADS7830 ADC; `imu_sensor` publishes raw `Imu` on `imu/data_raw` from the MPU6050, and `imu_filter_madgwick` adds orientation on `imu/data`.
 
 ## Layout
 
@@ -41,7 +41,8 @@ The package drives Gerry's 18 leg servos and 2 head servos, and reads its batter
 
 - Joint 2 is mounted mirrored: at rest its servo sits at 10° on legs 0–2 and 170° on legs 3–5. Channel 15 on `0x41` is the safe test servo.
 - Servo angle 0 to π maps to 500–2500 µs at 50 Hz, the kit's assumption, not yet measured on Gerry.
-- Other I²C devices: `0x68` MPU6050 IMU. `0x70` is the PCA9685 all-call address, not a device.
+- `0x70` on the I²C bus is the PCA9685 all-call address, not a device.
+- IMU readings are in the chip's own axes in `imu_link`; how the chip sits on the body belongs in the URDF.
 
 ## Rules
 

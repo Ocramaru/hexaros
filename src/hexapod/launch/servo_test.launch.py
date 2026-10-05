@@ -25,4 +25,6 @@ def generate_launch_description():
     Node(package='hexapod', executable='servo_controller', output='screen', parameters=parameters),
     Node(package='hexapod', executable='servo_publisher', output='screen'),
     Node(package='hexapod', executable='battery_monitor', output='screen', parameters=parameters),
+    Node(package='hexapod', executable='imu_sensor', output='screen', parameters=parameters),
+    Node(package='imu_filter_madgwick', executable='imu_filter_madgwick_node', output='screen', parameters=parameters[:1]),
   ])

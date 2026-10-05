@@ -33,5 +33,8 @@ class FakeBus:
   def read_byte_data(self, address, register):
     return self.registers.get((address, register), 0)
 
+  def read_i2c_block_data(self, address, register, length):
+    return [self.registers.get((address, register + offset), 0) for offset in range(length)]
+
   def close(self):
     pass

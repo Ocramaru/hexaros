@@ -10,14 +10,27 @@ kind: context
 
 | section | line |
 |---|---|
-| Config | 22 |
-| Hardware | 27 |
-| Rules | 33 |
+| Layout | 23 |
+| Config | 35 |
+| Hardware | 40 |
+| Rules | 46 |
 
 <!-- /map -->
 
 
 The package drives Gerry's 18 leg servos and 2 head servos, and reads its batteries. `sensor_msgs/JointState` commands on `joint_commands` go to `servo_controller`, which converts joint angles to servo angles and writes them to two PCA9685 boards over I²C; `battery_monitor` publishes `BatteryState` on `battery/<name>` from the ADS7830 ADC.
+
+## Layout
+
+| folder | holds |
+|---|---|
+| `hexapod/drivers/` | ROS-free hardware access, one file per chip |
+| `hexapod/motion/` | nodes that move the robot |
+| `hexapod/sensors/` | nodes that publish sensor readings |
+| `hexapod/calibrate/` | `python3 -m` scripts that write `config/calibration.yaml` |
+| `hexapod/tests/` | dry-run stand-ins (`FakeBus`) and hardware smoke tests |
+| `hexapod/` | `joints.py` (joint layout, shared by motion and the URDF) and `utilities.py` (`run_node`) |
+| `test/` | ament lint tests run by `colcon test` |
 
 ## Config
 
@@ -32,7 +45,7 @@ The package drives Gerry's 18 leg servos and 2 head servos, and reads its batter
 
 ## Rules
 
-- Drivers (`servo_driver.py`, `adc_driver.py`) stay free of ROS, so they test against `FakeBus`.
+- Drivers stay free of ROS, so they test against `FakeBus`.
 - Every exit path relaxes the servos.
 - Stop the Freenove server before running anything; it drives the same boards and pin.
 - Frames follow ROS REP 103: x forward, y left, z up. Joint 0 rotates about z.

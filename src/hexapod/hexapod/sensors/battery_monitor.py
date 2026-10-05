@@ -14,8 +14,9 @@ from rclpy.node import Node
 from rclpy.publisher import Publisher
 from sensor_msgs.msg import BatteryState
 
-from hexapod.adc_driver import AdcDriver
-from hexapod.utilities import FakeBus, run_node
+from hexapod.drivers.adc import AdcDriver
+from hexapod.tests.fake_bus import FakeBus
+from hexapod.utilities import run_node
 
 # typical Li-ion resting voltage per cell and charge percent
 CELL_CURVE_VOLTS = [3.0, 3.3, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0, 4.1, 4.2]

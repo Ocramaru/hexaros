@@ -11,7 +11,7 @@ import statistics
 
 import yaml
 
-from hexapod.adc_driver import AdcDriver
+from hexapod.drivers.adc import AdcDriver
 
 CONFIG_DIR = Path(__file__).resolve().parents[2] / 'config'
 SAMPLES = 20

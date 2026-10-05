@@ -1,13 +1,13 @@
 """Hardware smoke test: moves channel 15 on board 0x41 through 90, 80, 100, 90 degrees without ROS.
 
-Only for the Pi with the servo boards attached; run with `python3 -m hexapod.servo_test`.
+Only for the Pi with the servo boards attached; run with `python3 -m hexapod.tests.servo_test`.
 
 Author: Marco Cassar (@Ocramaru)
 """
 import math
 import time
 
-from hexapod.servo_driver import ServoDriver
+from hexapod.drivers.servo import ServoDriver
 
 if __name__ == '__main__':
   from gpiozero import OutputDevice

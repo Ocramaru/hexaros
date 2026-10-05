@@ -28,9 +28,9 @@ setup(
   },
   entry_points={
     'console_scripts': [
-      'servo_controller = hexapod.servo_controller:main',
-      'servo_publisher = hexapod.servo_publisher:main',
-      'battery_monitor = hexapod.battery_monitor:main',
+      'servo_controller = hexapod.motion.servo_controller:main',
+      'servo_publisher = hexapod.motion.servo_publisher:main',
+      'battery_monitor = hexapod.sensors.battery_monitor:main',
     ],
   },
 )

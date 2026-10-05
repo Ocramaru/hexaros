@@ -14,10 +14,11 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
+from hexapod.drivers.servo import ServoDriver
 from hexapod.joints import (BOARD_ADDRESSES, JOINT_INDEX, JOINT_NAMES, joint_to_servo, servo_address_channel,
                             SERVO_LIMITS, SERVO_MAP, SIT_POSE)
-from hexapod.servo_driver import ServoDriver
-from hexapod.utilities import FakeBus, run_node
+from hexapod.tests.fake_bus import FakeBus
+from hexapod.utilities import run_node
 
 
 class ServoController(Node):

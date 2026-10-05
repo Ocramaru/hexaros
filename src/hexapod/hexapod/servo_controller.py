@@ -7,6 +7,7 @@ With `dry_run` the boards sit on a FakeBus and nothing touches I2C or GPIO.
 Author: Marco Cassar (@Ocramaru)
 """
 import contextlib
+import time
 
 import numpy as np
 import rclpy
@@ -14,7 +15,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
 from hexapod.joints import (BOARD_ADDRESSES, JOINT_INDEX, JOINT_NAMES, joint_to_servo, servo_address_channel,
-                            SERVO_LIMITS, SERVO_MAP)
+                            SERVO_LIMITS, SERVO_MAP, SIT_POSE)
 from hexapod.servo_driver import ServoDriver
 from hexapod.utilities import FakeBus, run_node
 
@@ -90,12 +91,24 @@ class ServoController(Node):
       commands[index] = position
     self.write_joints(commands)
 
+  def sit_down(self, duration=1.0, steps=20):
+    """Ramp every commanded joint to SIT_POSE, so a standing robot lowers itself before power is cut."""
+    commanded = np.flatnonzero(~np.isnan(self.joint_radians))
+    start = self.joint_radians[commanded]
+    for fraction in np.linspace(0, 1, steps + 1)[1:]:
+      self.write_joints(dict(zip(commanded, start + fraction * (SIT_POSE[commanded] - start))))
+      time.sleep(duration / steps)
+
   def destroy_node(self):
-    with contextlib.ExitStack() as cleanup:  # every step runs even if one raises; the error re-raises after
+    with contextlib.ExitStack() as cleanup:  # runs last-registered first: sit, power off, relax, close
       cleanup.callback(super().destroy_node)
       cleanup.callback(self.bus.close)
-      if self.power_pin is not None: cleanup.callback(self.power_pin.close)
-      for driver in self.drivers.values(): cleanup.callback(driver.shutdown)
+      for driver in self.drivers.values():
+        cleanup.callback(driver.shutdown)
+      if self.power_pin is not None:
+        cleanup.callback(self.power_pin.close)
+        cleanup.callback(self.power_pin.off)
+      cleanup.callback(self.sit_down)
 
 
 def main():

@@ -18,7 +18,7 @@ kind: context
 <!-- /map -->
 
 
-The package drives Gerry's 18 leg servos and 2 head servos, and reads its batteries. `sensor_msgs/JointState` commands on `joint_commands` go to `servo_controller`, which converts joint angles to servo angles and writes them to two PCA9685 boards over I²C; `battery_monitor` publishes `BatteryState` on `battery/<name>` from the ADS7830 ADC; `imu_sensor` publishes raw `Imu` on `imu/data_raw` from the MPU6050, and `imu_filter_madgwick` adds orientation on `imu/data`; `ultrasonic_sensor` publishes `Range` on `ultrasonic/range`; `gscam` publishes `camera/image_raw` from the Pi host's `rpicam-vid` stream (`deploy/rpicam-stream.service`), with `fake_camera` standing in on dry runs.
+The package drives Gerry's 18 leg servos and 2 head servos, and reads its batteries. `sensor_msgs/JointState` commands on `joint_commands` go to `servo_controller`, which converts joint angles to servo angles and writes them to two PCA9685 boards over I²C; `battery_monitor` publishes `BatteryState` on `battery/<name>` from the ADS7830 ADC; `imu_sensor` publishes raw `Imu` on `imu/data_raw` from the MPU6050, and `imu_filter_madgwick` adds orientation on `imu/data`; `ultrasonic_sensor` publishes `Range` on `ultrasonic/range`; `gscam` forwards the Pi host's `rpicam-vid` JPEGs on `camera/image_raw/compressed`, with no raw image (`deploy/rpicam-stream.service`), with `fake_camera` standing in on dry runs.
 
 ## Layout
 

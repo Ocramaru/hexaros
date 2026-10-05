@@ -33,9 +33,10 @@ imu_filter_madgwick:  # the node's own name: imu/data_raw in, imu/data with orie
     publish_tf: false
     world_frame: enu
 
-camera:  # gscam, or fake_camera in dry runs: camera/image_raw, camera/image_raw/compressed and camera/camera_info out
+camera:  # gscam, or fake_camera in dry runs: camera/image_raw/compressed and camera/camera_info out
   ros__parameters:
-    gscam_config: tcpclientsrc host=127.0.0.1 port=8554 ! jpegparse ! jpegdec ! videoconvert  # from deploy/rpicam-stream.service
+    gscam_config: tcpclientsrc host=127.0.0.1 port=8554 ! jpegparse  # from deploy/rpicam-stream.service
+    image_encoding: jpeg  # forward rpicam's JPEGs as they are; raw frames are too big for Wi-Fi
     camera_name: ov5647
     frame_id: camera_link
     reopen_on_eof: true  # rpicam-vid restarts between clients

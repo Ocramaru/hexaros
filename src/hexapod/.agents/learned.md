@@ -8,6 +8,7 @@ kind: learned
 
 ## Traps
 
+- **Raw camera frames do not cross Wi-Fi.** 640x480 `rgb8` at 28 fps is about 25 MB/s; with gscam decoding to raw, nothing reached Foxglove on sparky. `image_transport_plugins` also re-encodes every frame per subscribed transport, and `compressedDepth` fails on colour images every frame. Publish the JPEGs (`image_encoding: jpeg`), about 12 KB a frame.
 - **A YAML key that misses the node's name is silently ignored.** `imu_filter_madgwick`'s node is `imu_filter_madgwick`, not `imu_filter`; under the wrong key it kept `use_mag: true` and waited forever on `imu/mag`. Check with `ros2 node list`.
 - **ROS's `ros-jazzy-libcamera` cannot drive the Pi camera.** Its `ipa_rpi_vc4.so` signature is invalid, so libcamera isolates it in a proxy process, which crashes in 0.7.2 (`A list of V4L2 controls requires a ControlInfoMap`). Before that, the container needs `/run/udev` to see the camera, and Docker's seccomp answers libcamera's `clone3` with ENOSYS. Hence the host's `rpicam-vid` streams to `gscam` instead.
 - **Uncalibrated legs differ by tens of millimetres at the foot.** At one commanded pose, leg 4 hovered where the other five touched; leg 3 was next highest.

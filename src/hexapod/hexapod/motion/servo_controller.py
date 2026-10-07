@@ -28,6 +28,7 @@ class ServoController(Node):
     self.declare_parameter('board_addresses', list(BOARD_ADDRESSES))
     self.declare_parameter('servo_map', SERVO_MAP.tolist())
     self.declare_parameter('calibration', [0.0] * len(JOINT_NAMES))
+    self.declare_parameter('log_bus', False)  # dry run only: print every I2C write
     for name in JOINT_NAMES:  # one servo_limits.<joint> parameter each, so the YAML only lists exceptions
       self.declare_parameter(f'servo_limits.{name}', list(SERVO_LIMITS.get(name, (0.0, np.pi))))
     self.dry_run = self.get_parameter('dry_run').value
@@ -42,7 +43,7 @@ class ServoController(Node):
 
     # one bus shared by both boards
     if self.dry_run:
-      self.bus = FakeBus()
+      self.bus = FakeBus(verbose=self.get_parameter('log_bus').value)
     else:
       from smbus2 import SMBus
       self.bus = SMBus(1)

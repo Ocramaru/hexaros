@@ -10,6 +10,7 @@ import math
 
 import numpy as np
 import rclpy
+from rclpy.impl.rcutils_logger import RcutilsLogger
 from rclpy.node import Node
 from rclpy.publisher import Publisher
 from sensor_msgs.msg import BatteryState
@@ -34,6 +35,7 @@ class Pack:
   name: str
   divider: float
   publisher: Publisher
+  logger: RcutilsLogger  # kept, since rclpy's throttle state lives on the logger object
   smoothed: float | None = None
 
 
@@ -63,10 +65,10 @@ class BatteryMonitor(Node):
     self.design_capacity = self.get_parameter('design_capacity').value
     self.smoothing = self.get_parameter('smoothing').value
 
-    bus = FakeBus(read_byte_value=128) if dry_run else None
+    bus = FakeBus(read_byte_value=140) if dry_run else None  # a healthy 3.5-4.1 V per cell through either divider
     self.adc = AdcDriver(address=self.get_parameter('adc_address').value, bus=bus)
     self.packs = [
-      Pack(channel, name, divider, self.create_publisher(BatteryState, f'battery/{name}', 10))
+      Pack(channel, name, divider, self.create_publisher(BatteryState, f'battery/{name}', 10), self.get_logger().get_child(name))
       for channel, name, divider in zip(channels, names, dividers)
     ]
     self.create_timer(self.get_parameter('period').value, self.publish_batteries)
@@ -95,11 +97,10 @@ class BatteryMonitor(Node):
       msg.location = pack.name
       pack.publisher.publish(msg)
 
-      logger = self.get_logger().get_child(pack.name)  # per-pack logger: rclpy throttles per call site
       if cell_volts < self.critical_volts:
-        logger.error(f'critical: {pack.smoothed:.2f} V ({cell_volts:.2f} V per cell)', throttle_duration_sec=10.0)
+        pack.logger.error(f'critical: {pack.smoothed:.2f} V ({cell_volts:.2f} V per cell)', throttle_duration_sec=10.0)
       elif cell_volts < self.warn_volts:
-        logger.warning(f'low: {pack.smoothed:.2f} V ({cell_volts:.2f} V per cell)', throttle_duration_sec=10.0)
+        pack.logger.warning(f'low: {pack.smoothed:.2f} V ({cell_volts:.2f} V per cell)', throttle_duration_sec=10.0)
 
   def destroy_node(self):
     with contextlib.ExitStack() as cleanup:  # every step runs even if one raises; the error re-raises after

@@ -24,7 +24,7 @@ battery_monitor:
 imu_sensor:
   ros__parameters:
     address: 104  # 0x68, the MPU6050
-    frame_id: imu_link
+    frame_id: imu
     period: 0.01  # 100 Hz
 
 imu_filter_madgwick:  # the node's own name: imu/data_raw in, imu/data with orientation out
@@ -38,7 +38,7 @@ camera:  # gscam, or fake_camera in dry runs: camera/image_raw/compressed and ca
     gscam_config: tcpclientsrc host=127.0.0.1 port=8554 ! jpegparse  # from deploy/rpicam-stream.service
     image_encoding: jpeg  # forward rpicam's JPEGs as they are; raw frames are too big for Wi-Fi
     camera_name: ov5647
-    frame_id: camera_link
+    frame_id: camera_optical  # z out of the lens, as image data expects
     reopen_on_eof: true  # rpicam-vid restarts between clients
     sync_sink: false  # publish frames as they arrive
     width: 640  # fake_camera only; rpicam-stream.service sets the real size
@@ -51,5 +51,5 @@ ultrasonic_sensor:
     min_range: 0.02  # HC-SR04 datasheet
     max_range: 3.0  # the kit's limit
     field_of_view: 0.26  # 15 degrees, HC-SR04 datasheet
-    frame_id: ultrasonic_link
+    frame_id: ultrasonic
     period: 0.1

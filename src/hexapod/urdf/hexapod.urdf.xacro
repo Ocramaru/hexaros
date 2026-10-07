@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+<!-- Gerry, the Freenove Big Hexapod. Joints and parts from Freenove's CAD; body sizes measured on Gerry.
+     base_link is the centre of the main chassis, x forward, y left, z up. Joint names match JOINT_NAMES. Every part is drawn and collides as itself. -->
+<robot name="gerry" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:property name="joint0_height" value="0.0318"/>
+    <xacro:property name="joint1_offset_x" value="0.0333"/>
+    <xacro:property name="joint1_offset_y" value="0.0118"/>  <!-- mirrored by side -->
+    <xacro:property name="joint1_offset_z" value="-0.0393"/>
+    <xacro:property name="link1_length" value="0.090"/>
+    <xacro:property name="joint2_offset" value="${radians(10)}"/>  <!-- link 2's bend at joint 2 = 0 -->
+    <xacro:property name="foot_offset_x" value="0.1115"/>
+    <xacro:property name="foot_offset_y" value="0.0108"/>  <!-- mirrored by side -->
+    <xacro:property name="foot_offset_z" value="-0.0058"/>
+
+    <material name="frame"><color rgba="0.05 0.05 0.06 1"/></material>
+    <material name="servo"><color rgba="0.14 0.14 0.16 1"/></material>
+    <material name="ultrasonic"><color rgba="1.0 0.6 0.1 1"/></material>
+    <material name="camera"><color rgba="0.0 0.6 0.65 1"/></material>
+
+    <!-- one part, drawn and colliding -->
+    <xacro:macro name="part" params="xyz rpy:='0 0 0' material:=frame *shape">
+        <visual>
+            <origin xyz="${xyz}" rpy="${rpy}"/>
+            <geometry><xacro:insert_block name="shape"/></geometry>
+            <material name="${material}"/>
+        </visual>
+        <collision>
+            <origin xyz="${xyz}" rpy="${rpy}"/>
+            <geometry><xacro:insert_block name="shape"/></geometry>
+        </collision>
+    </xacro:macro>
+
+    <!-- mass and inertia about the centre of mass, from ml/hexai's CAD solve with each servo on the link it turns with -->
+    <xacro:macro name="mass_properties" params="xyz mass ixx iyy izz ixy:=0 ixz:=0 iyz:=0">
+        <inertial>
+            <origin xyz="${xyz}"/>
+            <mass value="${mass}"/>
+            <inertia ixx="${ixx}" ixy="${ixy}" ixz="${ixz}" iyy="${iyy}" iyz="${iyz}" izz="${izz}"/>
+        </inertial>
+    </xacro:macro>
+
+    <!-- one strip of the head's front plate; edges in mm in the robot frame -->
+    <xacro:macro name="plate" params="y0 y1 z0 z1">
+        <xacro:part xyz="0.029 ${(y0 + y1) / 2000} ${(z0 + z1) / 2000 - 0.0822}">
+            <box size="0.010 ${(y1 - y0) / 1000} ${(z1 - z0) / 1000}"/>
+        </xacro:part>
+    </xacro:macro>
+
+    <link name="base_link">
+        <xacro:part xyz="0 0 0"><box size="0.167 0.190 0.0636"/></xacro:part>  <!-- main chassis -->
+        <xacro:part xyz="0 0 0.0509"><box size="0.092 0.092 0.0381"/></xacro:part>  <!-- top cover -->
+        <xacro:part xyz="0.083 0 0.0362"><box size="0.012 0.032 0.0088"/></xacro:part>  <!-- pan horn and its mount -->
+    </link>
+
+    <!-- the body's mass, on a child link since KDL ignores mass on the root -->
+    <joint name="base_inertia_mount" type="fixed">
+        <parent link="base_link"/>
+        <child link="base_inertia"/>
+    </joint>
+
+    <link name="base_inertia">
+        <xacro:mass_properties xyz="0.00524 -0.0001 0.00861" mass="0.7308" ixx="2.137e-3" iyy="2.135e-3" izz="2.393e-3" ixy="-1.198e-5" ixz="-9.502e-5" iyz="-1.374e-6"/>
+    </link>
+
+    <!-- side is +1 on the left, -1 on the right -->
+    <xacro:macro name="leg" params="index x y yaw side">
+        <joint name="leg${index}_joint0" type="revolute">
+            <parent link="base_link"/>
+            <child link="leg${index}_link0"/>
+            <origin xyz="${x} ${y} ${joint0_height}" rpy="0 0 ${yaw}"/>
+            <axis xyz="0 0 1"/>
+            <limit lower="${-pi/2}" upper="${pi/2}" effort="1.0" velocity="5.0"/>
+        </joint>
+
+        <link name="leg${index}_link0">
+            <xacro:mass_properties xyz="0.01717 ${-side*0.01049} -0.0248" mass="0.1337" ixx="4.691e-5" iyy="7.186e-5" izz="6.668e-5" ixy="${side*2.235e-6}" ixz="6.123e-6" iyz="${-side*5.939e-7}"/>
+            <xacro:part xyz="0 ${-side*0.010} -0.0224" material="servo"><box size="0.020 0.054 0.045"/></xacro:part>  <!-- joint 0's servo -->
+            <xacro:part xyz="0.0154 0 -0.0293"><box size="0.061 0.0054 0.062"/></xacro:part>  <!-- bracket plate -->
+            <xacro:part xyz="0.0332 ${-side*0.0127} -0.0293" material="servo"><box size="0.020 0.045 0.054"/></xacro:part>  <!-- joint 1's servo -->
+        </link>
+
+        <joint name="leg${index}_joint1" type="revolute">
+            <parent link="leg${index}_link0"/>
+            <child link="leg${index}_link1"/>
+            <origin xyz="${joint1_offset_x} ${side*joint1_offset_y} ${joint1_offset_z}"/>
+            <axis xyz="0 1 0"/>  <!-- positive is down -->
+            <limit lower="${-pi/2}" upper="${pi/2}" effort="1.0" velocity="5.0"/>
+        </joint>
+
+        <link name="leg${index}_link1">
+            <xacro:mass_properties xyz="0.04446 ${side*0.00235} 0.0041" mass="0.0127" ixx="4.952e-6" iyy="9.717e-6" izz="1.222e-5" ixy="${side*9.084e-8}" ixz="-2.539e-7" iyz="${side*1.19e-7}"/>
+            <xacro:part xyz="0.0446 ${side*0.0047} -0.003"><box size="0.111 0.0056 0.0306"/></xacro:part>  <!-- plate -->
+        </link>
+
+        <joint name="leg${index}_joint2" type="revolute">
+            <parent link="leg${index}_link1"/>
+            <child link="leg${index}_link2"/>
+            <origin xyz="${link1_length} 0 0" rpy="0 ${joint2_offset} 0"/>
+            <axis xyz="0 1 0"/>  <!-- positive is down -->
+            <limit lower="${-joint2_offset}" upper="${pi - joint2_offset}" effort="1.0" velocity="5.0"/>
+        </joint>
+
+        <link name="leg${index}_link2">
+            <xacro:mass_properties xyz="0.01303 ${-side*0.02281} 0.0006" mass="0.0716" ixx="1.744e-5" iyy="3.756e-5" izz="3.618e-5" ixy="${-side*2.797e-6}" ixz="-2.305e-7" iyz="${side*2.594e-9}"/>
+            <!-- bar, tapering toward the foot -->
+            <xacro:part xyz="0.011 ${-side*0.0111} -0.0064"><box size="0.068 0.0057 0.0308"/></xacro:part>
+            <xacro:part xyz="0.065 ${-side*0.0111} -0.0036"><box size="0.040 0.0057 0.0176"/></xacro:part>
+            <xacro:part xyz="0.0983 ${-side*0.0111} -0.0046"><box size="0.0265 0.0057 0.0088"/></xacro:part>
+            <xacro:part xyz="0.0085 ${-side*0.022} -0.0058" material="servo"><box size="0.054 0.0451 0.0201"/></xacro:part>  <!-- joint 2's servo -->
+        </link>
+
+        <joint name="leg${index}_foot_mount" type="fixed">
+            <parent link="leg${index}_link2"/>
+            <child link="leg${index}_foot"/>
+            <origin xyz="${foot_offset_x} ${-side*foot_offset_y} ${foot_offset_z}"/>
+        </joint>
+
+        <link name="leg${index}_foot">
+            <xacro:part xyz="0 0 0"><sphere radius="0.004"/></xacro:part>
+        </link>
+    </xacro:macro>
+
+    <!-- hexai's order, leg 0 front right then clockwise from above -->
+    <xacro:leg index="0" x="0.0759" y="-0.0551" yaw="${radians(-36)}" side="-1"/>
+    <xacro:leg index="1" x="0.0" y="-0.0850" yaw="${radians(-90)}" side="-1"/>
+    <xacro:leg index="2" x="-0.0759" y="-0.0551" yaw="${radians(-144)}" side="-1"/>
+    <xacro:leg index="3" x="-0.0759" y="0.0551" yaw="${radians(144)}" side="1"/>
+    <xacro:leg index="4" x="0.0" y="0.0850" yaw="${radians(90)}" side="1"/>
+    <xacro:leg index="5" x="0.0759" y="0.0551" yaw="${radians(36)}" side="1"/>
+
+    <joint name="head_joint0" type="revolute">
+        <parent link="base_link"/>
+        <child link="head_link0"/>
+        <origin xyz="0.083 0 0.0413"/>
+        <axis xyz="0 0 1"/>  <!-- positive is left -->
+        <limit lower="${-pi/2}" upper="${pi/2}" effort="0.1" velocity="5.0"/>
+    </joint>
+
+    <link name="head_link0">
+        <xacro:mass_properties xyz="0.00752 0.00204 0.02822" mass="0.0251" ixx="6.586e-6" iyy="8.462e-6" izz="4.394e-6" ixy="6.622e-7" ixz="-2.753e-7" iyz="-1.716e-7"/>
+        <xacro:part xyz="0.0052 0 0.0144" material="servo"><box size="0.0328 0.0122 0.0302"/></xacro:part>  <!-- pan servo -->
+        <xacro:part xyz="0.0052 0.0086 0.0285"><box size="0.0326 0.005 0.0448"/></xacro:part>  <!-- upright bracket -->
+        <xacro:part xyz="0.0052 0.0026 0.0409" material="servo"><box size="0.0328 0.0302 0.0122"/></xacro:part>  <!-- tilt servo -->
+    </link>
+
+    <joint name="head_joint1" type="revolute">
+        <parent link="head_link0"/>
+        <child link="head_link1"/>
+        <origin xyz="0.0104 0 0.0409"/>
+        <axis xyz="0 1 0"/>  <!-- positive is down -->
+        <limit lower="${-pi/2}" upper="${radians(40)}" effort="0.1" velocity="5.0"/>
+    </joint>
+
+    <link name="head_link1">
+        <xacro:mass_properties xyz="0.0274 0.00123 0.00528" mass="0.0281" ixx="1.098e-5" iyy="7.215e-6" izz="7.746e-6" ixy="1.925e-7" ixz="-2.802e-7" iyz="1.785e-8"/>
+        <xacro:part xyz="0.0094 0.022 0"><box size="0.0388 0.005 0.032"/></xacro:part>  <!-- tilt bracket -->
+        <!-- front plate around the mouth hole -->
+        <xacro:plate y0="-25" y1="27" z0="58" z1="64"/>
+        <xacro:plate y0="-25" y1="-5" z0="64" z1="75.5"/>
+        <xacro:plate y0="7" y1="27" z0="64" z1="75.5"/>
+        <xacro:plate y0="-25" y1="27" z0="75.5" z1="117.8"/>
+        <xacro:part xyz="0.0219 0.0011 0.0091" material="ultrasonic"><box size="0.004 0.0455 0.020"/></xacro:part>  <!-- ultrasonic board -->
+        <xacro:part xyz="0.0299 0.014 0.012" rpy="0 ${pi/2} 0" material="ultrasonic"><cylinder radius="0.008" length="0.012"/></xacro:part>  <!-- ultrasonic transducers -->
+        <xacro:part xyz="0.0299 -0.012 0.012" rpy="0 ${pi/2} 0" material="ultrasonic"><cylinder radius="0.008" length="0.012"/></xacro:part>
+        <xacro:part xyz="0.0225 0.001 -0.0125" material="camera"><box size="0.002 0.025 0.024"/></xacro:part>  <!-- camera board -->
+        <xacro:part xyz="0.0278 0.001 -0.0125" rpy="0 ${pi/2} 0" material="camera"><cylinder radius="0.004" length="0.0076"/></xacro:part>  <!-- camera lens -->
+    </link>
+
+    <joint name="camera_mount" type="fixed">
+        <parent link="head_link1"/>
+        <child link="camera"/>
+        <origin xyz="0.0316 0.001 -0.0125"/>  <!-- the lens front -->
+    </joint>
+
+    <link name="camera"/>
+
+    <joint name="camera_optical_mount" type="fixed">  <!-- z out of the lens, x right, y down -->
+        <parent link="camera"/>
+        <child link="camera_optical"/>
+        <origin rpy="${-pi/2} 0 ${-pi/2}"/>
+    </joint>
+
+    <link name="camera_optical"/>
+
+    <joint name="ultrasonic_mount" type="fixed">  <!-- x along the beam -->
+        <parent link="head_link1"/>
+        <child link="ultrasonic"/>
+        <origin xyz="0.0359 0.001 0.012"/>
+    </joint>
+
+    <link name="ultrasonic"/>
+
+    <joint name="imu_mount" type="fixed">  <!-- axes unchecked -->
+        <parent link="base_link"/>
+        <child link="imu"/>
+        <origin xyz="0.0399 -0.0086 0.0375"/>
+    </joint>
+
+    <link name="imu"/>
+
+</robot>

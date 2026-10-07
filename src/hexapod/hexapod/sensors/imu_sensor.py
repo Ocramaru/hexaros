@@ -22,7 +22,7 @@ class ImuSensor(Node):
     super().__init__('imu_sensor')
     self.declare_parameter('dry_run', False)
     self.declare_parameter('address', 0x68)
-    self.declare_parameter('frame_id', 'imu_link')
+    self.declare_parameter('frame_id', 'imu')
     self.declare_parameter('period', 0.01)
     self.declare_parameter('gyro_bias', [0.0, 0.0, 0.0])
 

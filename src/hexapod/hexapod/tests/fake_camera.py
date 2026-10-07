@@ -20,7 +20,7 @@ class FakeCamera(Node):
     super().__init__('camera')
     self.declare_parameter('width', 640)
     self.declare_parameter('height', 480)
-    self.declare_parameter('frame_id', 'camera_link')
+    self.declare_parameter('frame_id', 'camera_optical')
     self.declare_parameter('period', 0.1)
     self.width = self.get_parameter('width').value
     self.height = self.get_parameter('height').value

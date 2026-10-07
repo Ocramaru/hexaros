@@ -25,7 +25,7 @@ class UltrasonicSensor(Node):
     self.declare_parameter('min_range', 0.02)
     self.declare_parameter('max_range', 3.0)
     self.declare_parameter('field_of_view', 0.26)
-    self.declare_parameter('frame_id', 'ultrasonic_link')
+    self.declare_parameter('frame_id', 'ultrasonic')
     self.declare_parameter('period', 0.1)
 
     dry_run = self.get_parameter('dry_run').value

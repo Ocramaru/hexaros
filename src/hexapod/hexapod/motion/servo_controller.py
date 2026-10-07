@@ -28,6 +28,7 @@ class ServoController(Node):
     self.declare_parameter('board_addresses', list(BOARD_ADDRESSES))
     self.declare_parameter('servo_map', SERVO_MAP.tolist())
     self.declare_parameter('calibration', [0.0] * len(JOINT_NAMES))
+    self.declare_parameter('state_period', 0.05)
     self.declare_parameter('log_bus', False)  # dry run only: print every I2C write
     for name in JOINT_NAMES:  # one servo_limits.<joint> parameter each, so the YAML only lists exceptions
       self.declare_parameter(f'servo_limits.{name}', list(SERVO_LIMITS.get(name, (0.0, np.pi))))
@@ -61,6 +62,9 @@ class ServoController(Node):
 
     # joint commands from the publisher (later the policy)
     self.create_subscription(JointState, 'joint_commands', self.callback, 10)
+    # the commanded pose, for robot_state_publisher; the servos report no position of their own
+    self.state_publisher = self.create_publisher(JointState, 'joint_states', 10)
+    self.create_timer(self.get_parameter('state_period').value, self.publish_state)
 
     mode = ' in dry run mode' if self.dry_run else ''
     self.get_logger().info(f'Servo Controller Node has been started on addresses {[hex(address) for address in self.drivers]}{mode}.')
@@ -92,6 +96,12 @@ class ServoController(Node):
       if np.isnan(position) or self.joint_radians[index] == position: continue  # no command, or already there
       commands[index] = position
     self.write_joints(commands)
+
+  def publish_state(self):
+    commanded = ~np.isnan(self.joint_radians)  # joint used (bool)
+    msg = JointState(name=[name for name, known in zip(JOINT_NAMES, commanded) if known], position=self.joint_radians[commanded].tolist())
+    msg.header.stamp = self.get_clock().now().to_msg()
+    self.state_publisher.publish(msg)
 
   def lie_down(self, duration=1.0, steps=20):
     """Ramp every commanded joint to REST_POSE, so a standing robot lowers itself before power is cut."""

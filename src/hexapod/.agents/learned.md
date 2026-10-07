@@ -8,6 +8,7 @@ kind: learned
 
 ## Traps
 
+- **pack0 reads high while the servos draw current.** Calibrated at 8.35 V at rest, it read 8.59 V with Gerry standing, where a loaded pack should sag; likely servo current shifting the ADC's ground, so under load pack0 looks healthier than it is.
 - **Sparky's dry runs drive the real Gerry.** Both sit on ROS domain 0, so an orphaned `servo_publisher` from a closed dry-run launch stood Gerry up the moment his controller started; check `ros2 node list` before powering servos.
 - **rclpy throttles per logger object.** A fresh `get_child(name)` each call never throttles; create child loggers once.
 - **`-p robot_description:="$(xacro ...)"` parses the URDF as YAML.** A `: ` in an XML comment breaks it; launch files with `ParameterValue(..., value_type=str)` are safe.

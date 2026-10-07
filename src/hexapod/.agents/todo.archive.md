@@ -20,7 +20,7 @@ kind: todo.archive
 
 - Check every joint on Gerry. Leg order matched; joint 0's sign and the head's channels and tilt sign were fixed in `joints.py`.
 - Safe shutdown into `REST_POSE`. Confirmed on Gerry.
-- Body poses from leg IK. Done as `body_pose`; dry run only.
+- Body poses from leg IK. Done as `body_pose`; roll, pitch, yaw and height confirmed on Gerry.
 - Closed-form leg IK. Done in `kinematics.py` on Pinocchio, limits from the URDF.
 - URDF, `joint_states` and `robot_state_publisher`. Done as `urdf/hexapod.urdf.xacro`, geometry from the CAD.
 - Head pan/tilt control. Done as `head_joint0` and `head_joint1` on `joint_commands`, sharing the flat 20-joint maps with the legs; `servo_limits` caps pan at the kit's 50°.
@@ -28,5 +28,7 @@ kind: todo.archive
 
 ## Sensors
 
+- Camera pipeline. Done as rpicam-vid on the host into gscam, JPEG at 15 Hz in `camera_optical`; shown in Foxglove.
+- IMU pipeline. Done as `imu_sensor` and Madgwick; the chip's axes are in the URDF's `imu_mount`.
 - Ultrasonic pipeline. Done as `ultrasonic_sensor`; tested on Gerry.
 - Battery voltage pipeline. Done as `battery_monitor`, dividers calibrated at 8.35 V.

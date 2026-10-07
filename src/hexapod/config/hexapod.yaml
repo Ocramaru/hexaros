@@ -38,9 +38,11 @@ camera:  # gscam, or fake_camera in dry runs: camera/image_raw/compressed and ca
     gscam_config: tcpclientsrc host=127.0.0.1 port=8554 ! jpegparse  # from deploy/rpicam-stream.service
     image_encoding: jpeg  # forward rpicam's JPEGs as they are; raw frames are too big for Wi-Fi
     camera_name: ov5647
+    camera_info_url: package://hexapod/config/ov5647.yaml
     frame_id: camera_optical  # z out of the lens, as image data expects
     reopen_on_eof: true  # rpicam-vid restarts between clients
     sync_sink: false  # publish frames as they arrive
+    use_sensor_data_qos: true  # best effort, so Wi-Fi loss drops a frame instead of stalling the stream
     width: 640  # fake_camera only; rpicam-stream.service sets the real size
     height: 480
 

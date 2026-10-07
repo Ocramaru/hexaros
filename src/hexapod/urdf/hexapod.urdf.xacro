@@ -191,10 +191,10 @@
 
     <link name="ultrasonic"/>
 
-    <joint name="imu_mount" type="fixed">  <!-- axes unchecked -->
+    <joint name="imu_mount" type="fixed">  <!-- the chip's x points right, its y forward -->
         <parent link="base_link"/>
         <child link="imu"/>
-        <origin xyz="0.0399 -0.0086 0.0375"/>
+        <origin xyz="0.0399 -0.0086 0.0375" rpy="0 0 ${-pi/2}"/>
     </joint>
 
     <link name="imu"/>

@@ -11,16 +11,15 @@ kind: todo
 | section | line |
 |---|---|
 | Motion | 21 |
-| Sensors | 31 |
-| Outputs | 37 |
-| Practice | 41 |
+| Sensors | 30 |
+| Outputs | 35 |
+| Practice | 39 |
 
 <!-- /map -->
 
 
 ## Motion
 
-- Try `body_pose.launch.py` on Gerry; it is tested in dry run only.
 - Per-joint calibration procedure, writing `calibration` in `config/calibration.yaml`. Leg 4 is furthest off, then leg 3.
 - `servo_controller` takes its joint limits from the URDF instead of repeating them in `servo_limits`.
 - `STAND_POSE` and `REST_POSE` as footholds through the IK, so rest truly puts the belly down.
@@ -30,9 +29,8 @@ kind: todo
 
 ## Sensors
 
-- IMU pipeline (MPU6050, `0x68`). Raw data, gyro bias and Madgwick work; still find the chip's axes by tilting Gerry and watching `imu/data_raw`.
-- Always-on battery monitoring: start `battery_monitor` at boot on its own, independent of test launches; at critical voltage lie down, cut servo power and shut the Pi down cleanly. Needs both dividers recalibrated first; pack0 reads 9.09 V on a 2S pack.
-- Camera pipeline. Confirm the JPEG stream shows in Foxglove; then calibrate the lens with `camera_calibration` and a checkerboard, and point gscam's `camera_info_url` at the result so Rectify works.
+- Always-on battery monitoring: start `battery_monitor` at boot on its own, independent of test launches; at critical voltage lie down, cut servo power and shut the Pi down cleanly.
+- Camera lens calibration with `camera_calibration` and a checkerboard, replacing the nominal `config/ov5647.yaml`.
 
 ## Outputs
 

@@ -1,6 +1,6 @@
 ---
 name: learned
-description: Traps that already cost time in the hexapod package — node-name YAML keys, ROS libcamera on the Pi, uncalibrated legs, the kit's startup pose, rclpy shutdown, launch output buffering, scripted SIGINT tests
+description: Traps that already cost time in the hexapod package — bag replay, containers and shared memory, sparky driving Gerry, battery readings under load, rclpy logging, URDF tooling, the camera over Wi-Fi and in Docker, node-name YAML keys, legs and poses, shutdown
 kind: learned
 ---
 
@@ -8,6 +8,8 @@ kind: learned
 
 ## Traps
 
+- **A bag replayed through the live bridge shows the camera but a frozen model.** TF keeps its recorded stamps; replay with `ros2 bag play <bag> --clock` and `just bridge-replay` (the bridge on sim time), which shows nothing without `--clock`.
+- **Two containers on the Pi saw each other's topics but got no messages.** ROS sends same-host data through `/dev/shm`, and each container had its own; `ipc: host` in `compose.yaml` shares it. Sparky, on the network, was unaffected.
 - **pack0 reads high while the servos draw current.** Calibrated at 8.35 V at rest, it read 8.59 V with Gerry standing, where a loaded pack should sag; likely servo current shifting the ADC's ground, so under load pack0 looks healthier than it is.
 - **Sparky's dry runs drive the real Gerry.** Both sit on ROS domain 0, so an orphaned `servo_publisher` from a closed dry-run launch stood Gerry up the moment his controller started; check `ros2 node list` before powering servos.
 - **rclpy throttles per logger object.** A fresh `get_child(name)` each call never throttles; create child loggers once.

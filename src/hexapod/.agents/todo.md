@@ -1,6 +1,6 @@
 ---
 name: todo
-description: Open work for the hexapod ROS package — checks on Gerry, calibration, poses from footholds, gait, the null space, URDF limits in the controller, sensors, and merging with ml/hexai
+description: Open work for the hexapod ROS package — joint calibration, URDF limits in the controller, poses from footholds, gait, the null space, merging with ml/hexai, battery monitoring, camera calibration, outputs
 kind: todo
 ---
 

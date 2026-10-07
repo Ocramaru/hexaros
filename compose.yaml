@@ -4,6 +4,7 @@ services:
     image: hexapod-ros
     init: true                 # forwards Ctrl-C / docker stop so the node relaxes the servos
     network_mode: host         # ROS discovery between the container, the Pi and sparky
+    ipc: host                  # one /dev/shm, so ROS shared-memory messages reach other containers on the Pi
     devices:
       - /dev/i2c-1             # PCA9685 boards, ADC, IMU
       - /dev/gpiochip0         # GPIO 4 servo power, GPIO 27/22 ultrasonic

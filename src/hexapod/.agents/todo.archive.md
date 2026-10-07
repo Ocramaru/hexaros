@@ -11,13 +11,15 @@ kind: todo.archive
 | section | line |
 |---|---|
 | Motion | 19 |
-| Sensors | 27 |
+| Sensors | 29 |
 
 <!-- /map -->
 
 
 ## Motion
 
+- Check every joint on Gerry. Leg order matched; joint 0's sign and the head's channels and tilt sign were fixed in `joints.py`.
+- Safe shutdown into `REST_POSE`. Confirmed on Gerry.
 - Body poses from leg IK. Done as `body_pose`; dry run only.
 - Closed-form leg IK. Done in `kinematics.py` on Pinocchio, limits from the URDF.
 - URDF, `joint_states` and `robot_state_publisher`. Done as `urdf/hexapod.urdf.xacro`, geometry from the CAD.
@@ -27,4 +29,4 @@ kind: todo.archive
 ## Sensors
 
 - Ultrasonic pipeline. Done as `ultrasonic_sensor`; tested on Gerry.
-- Battery voltage pipeline. Done as `battery_monitor`; dividers still need recalibrating.
+- Battery voltage pipeline. Done as `battery_monitor`, dividers calibrated at 8.35 V.

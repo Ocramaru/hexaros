@@ -20,11 +20,11 @@ BOARD_ADDRESSES = (0x41, 0x40)  # servos 0-15 on the first board, 16-31 on the s
 SERVO_MAP = np.array([  # kit servo numbers, from the kit's control.py and server.py
   15, 14, 13, 12, 11, 10, 9, 8, 31,  # legs 0-2
   22, 23, 27, 19, 20, 21, 16, 17, 18,  # legs 3-5
-  0, 1,  # head
+  1, 0,  # head pan, tilt
 ])
-SERVO_LIMITS = {'head_joint0': (0.873, np.pi)}  # pan (50, 180) degrees, the kit's limits; others use the full 0 to pi
+SERVO_LIMITS = {'head_joint1': (0.873, np.pi)}  # tilt (50, 180) degrees, the kit's limits; others use the full 0 to pi
 
-SIGNS = np.array([1, -1, 1] * 3 + [1, 1, -1] * 3 + [1, 1])
+SIGNS = np.array([-1, -1, 1] * 3 + [-1, 1, -1] * 3 + [1, -1])
 # servo angles at rest (joint angle 0) | (90, 90, 10) legs 0-2, (90, 90, 170) legs 3-5, (90, 90) head
 SERVO_AT_REST = np.array([np.pi / 2, np.pi / 2, np.pi / 18] * 3 + [np.pi / 2, np.pi / 2, 17 * np.pi / 18] * 3 + [np.pi / 2, np.pi / 2])
 

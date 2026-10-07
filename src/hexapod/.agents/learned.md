@@ -8,6 +8,7 @@ kind: learned
 
 ## Traps
 
+- **Sparky's dry runs drive the real Gerry.** Both sit on ROS domain 0, so an orphaned `servo_publisher` from a closed dry-run launch stood Gerry up the moment his controller started; check `ros2 node list` before powering servos.
 - **rclpy throttles per logger object.** A fresh `get_child(name)` each call never throttles; create child loggers once.
 - **`-p robot_description:="$(xacro ...)"` parses the URDF as YAML.** A `: ` in an XML comment breaks it; launch files with `ParameterValue(..., value_type=str)` are safe.
 - **The VS Code URDF extension resolves xacro macros by name alone.** A macro named like a URDF element (`inertia`) recurses there; real xacro is fine.

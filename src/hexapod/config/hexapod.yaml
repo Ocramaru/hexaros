@@ -5,9 +5,9 @@ servo_controller:
     board_addresses: [65, 64]  # 0x41 holds kit servos 0-15, 0x40 holds 16-31
     servo_map: [15, 14, 13, 12, 11, 10, 9, 8, 31,  # legs 0-2
                 22, 23, 27, 19, 20, 21, 16, 17, 18,  # legs 3-5
-                0, 1]  # head
+                1, 0]  # head pan, tilt
     servo_limits:  # [min, max] servo radians overrides for joints that dont default [0,pi]
-      head_joint0: [0.873, 3.142]  # pan (50, 180) degrees
+      head_joint1: [0.873, 3.142]  # tilt (50, 180) degrees
 
 battery_monitor:
   ros__parameters:

@@ -24,6 +24,7 @@ AXES = ('x', 'y', 'z', 'roll', 'pitch', 'yaw')
 
 
 class BodyPose(Node):
+
   def __init__(self):
     super().__init__('body_pose')
     self.kinematics = Kinematics()

@@ -65,6 +65,7 @@ except PackageNotFoundError:
 
 
 class Kinematics:
+
   def __init__(self, urdf=None):
     """Build both models; `urdf` is URDF XML, or None to expand the package's xacro."""
     xml = urdf if urdf is not None else xacro.process_file(str(URDF_PATH)).toxml()

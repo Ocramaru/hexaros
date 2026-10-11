@@ -8,6 +8,7 @@ Author: Marco Cassar (@Ocramaru)
 
 
 class FakeBus:
+
   def __init__(self, read_byte_value=0, verbose=False):
     self.registers = {}
     self.read_byte_value = read_byte_value  # what a bare read_byte returns, e.g. an ADC reading

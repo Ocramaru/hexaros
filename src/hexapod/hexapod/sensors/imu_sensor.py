@@ -18,6 +18,7 @@ from hexapod.utilities import run_node
 
 
 class ImuSensor(Node):
+
   def __init__(self):
     super().__init__('imu_sensor')
     self.declare_parameter('dry_run', False)

@@ -22,6 +22,7 @@ from hexapod.utilities import run_node
 
 
 class ServoController(Node):
+
   def __init__(self):
     super().__init__('servo_controller')
     self.declare_parameter('dry_run', False)

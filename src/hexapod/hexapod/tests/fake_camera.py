@@ -16,6 +16,7 @@ from hexapod.utilities import run_node
 
 
 class FakeCamera(Node):
+
   def __init__(self):
     super().__init__('camera')
     self.declare_parameter('width', 640)

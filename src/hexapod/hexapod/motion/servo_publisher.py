@@ -14,6 +14,7 @@ from hexapod.utilities import run_node
 
 
 class ServoPublisher(Node):
+
   def __init__(self):
     super().__init__('servo_publisher')
 

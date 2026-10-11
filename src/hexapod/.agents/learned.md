@@ -1,6 +1,6 @@
 ---
 name: learned
-description: Traps that already cost time in the hexapod package — bag replay, containers and shared memory, sparky driving Gerry, battery readings under load, rclpy logging, URDF tooling, the camera over Wi-Fi and in Docker, node-name YAML keys, legs and poses, shutdown
+description: Traps that already cost time in the hexapod package — Lyrical's lint and second Ctrl-C, bag replay, containers and shared memory, sparky driving Gerry, battery readings under load, rclpy logging, URDF tooling, the camera over Wi-Fi and in Docker, node-name YAML keys, legs and poses, shutdown
 kind: learned
 ---
 
@@ -8,6 +8,8 @@ kind: learned
 
 ## Traps
 
+- **Lyrical's flake8 wants a blank line after `class X:` (CNL100), but pep257 forbids one before a class docstring (D211).** A class that opens with a docstring takes it straight under the `class` line; the rest take the blank line.
+- **On Lyrical, a second Ctrl-C raised inside `destroy_node`.** Ctrl-C under `ros2 launch` reaches each node twice, and Jazzy's rclpy absorbed the second; `run_node` now ignores SIGINT once cleanup starts. Upstream C++ nodes such as Madgwick still exit -2.
 - **A bag replayed through the live bridge shows the camera but a frozen model.** TF keeps its recorded stamps; replay with `ros2 bag play <bag> --clock` and `just bridge-replay` (the bridge on sim time), which shows nothing without `--clock`.
 - **Two containers on the Pi saw each other's topics but got no messages.** ROS sends same-host data through `/dev/shm`, and each container had its own; `ipc: host` in `compose.yaml` shares it. Sparky, on the network, was unaffected.
 - **pack0 reads high while the servos draw current.** Calibrated at 8.35 V at rest, it read 8.59 V with Gerry standing, where a loaded pack should sag; likely servo current shifting the ADC's ground, so under load pack0 looks healthier than it is.

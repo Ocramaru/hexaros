@@ -31,6 +31,7 @@ def cell_percentage(cell_volts):
 
 @dataclasses.dataclass
 class Pack:
+
   channel: int
   name: str
   divider: float
@@ -40,6 +41,7 @@ class Pack:
 
 
 class BatteryMonitor(Node):
+
   def __init__(self):
     super().__init__('battery_monitor')
     self.declare_parameter('dry_run', False)

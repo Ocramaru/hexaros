@@ -1,18 +1,33 @@
+x-workspace: &workspace
+  init: true                   # forwards Ctrl-C / docker stop so the node relaxes the servos
+  network_mode: host           # ROS discovery between the containers, the Pi and sparky
+  ipc: host                    # one /dev/shm, so ROS shared-memory messages reach other containers on the machine
+  volumes:
+    - .:/ws                    # the workspace, live (not a copy)
+  working_dir: /ws
+  environment:
+    - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+  stdin_open: true
+  tty: true
+
 services:
-  hexapod:
-    build: .
-    image: hexapod-ros
-    init: true                 # forwards Ctrl-C / docker stop so the node relaxes the servos
-    network_mode: host         # ROS discovery between the container, the Pi and sparky
-    ipc: host                  # one /dev/shm, so ROS shared-memory messages reach other containers on the Pi
+  hexapod:                     # on the Pi, with Gerry's hardware
+    <<: *workspace
+    build:
+      context: .
+      target: robot
+    image: hexaros
     devices:
       - /dev/i2c-1             # PCA9685 boards, ADC, IMU
       - /dev/gpiochip0         # GPIO 4 servo power, GPIO 27/22 ultrasonic
-    volumes:
-      - .:/ws                  # the workspace, live (not a copy)
-    working_dir: /ws
+
+  dev:                         # on sparky: dry runs, the Foxglove bridge and replay; no devices, so sparky's own I2C stays untouched
+    <<: *workspace
+    build:
+      context: .
+      target: dev
+    image: hexaros-dev
+    user: ${HOST_UID:-1000}:${HOST_GID:-1000}  # files it writes in the workspace stay yours, not root's
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
-    stdin_open: true
-    tty: true
-
+      - HOME=/tmp                # ROS logs and caches need a writable home
